@@ -5,11 +5,11 @@
 #include <string.h>
 
 /**
- * main - Entry point
- * @argc: Number of arguments passed to the program
- * @argv: Array of pointers to the arguments
+ * main - Entry point for the Monty interpreter
+ * @argc: Number of arguments
+ * @argv: Array of arguments
  *
- * Return: EXIT_SUCCESS if successful, otherwise EXIT_FAILURE
+ * Return: EXIT_SUCCESS if successful, EXIT_FAILURE otherwise
  */
 int main(int argc, char *argv[])
 {
@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
 	ssize_t read;
 	stack_t *stack = NULL;
 	char *opcode;
+	int value;
 
 	if (argc != 2)
 	{
@@ -42,7 +43,13 @@ int main(int argc, char *argv[])
 		{
 			if (strcmp(opcode, "push") == 0)
 			{
-				int value = atoi(strtok(NULL, " "));
+				char *arg = strtok(NULL, " ");
+				if (arg == NULL)
+				{
+					fprintf(stderr, "Error: Push requires an argument\n");
+					exit(EXIT_FAILURE);
+				}
+				value = atoi(arg);
 				push(&stack, value);
 			}
 			else if (strcmp(opcode, "pall") == 0)
@@ -60,7 +67,7 @@ int main(int argc, char *argv[])
 }
 
 /**
- * free_stack - Frees a stack
+ * free_stack - Frees a stack_t stack
  * @stack: Pointer to the top of the stack
  */
 void free_stack(stack_t *stack)
@@ -71,6 +78,8 @@ void free_stack(stack_t *stack)
 	{
 		temp = stack;
 		stack = stack->next;
+		temp->prev = NULL;
+		temp->next = NULL;
 		free(temp);
 	}
 }
