@@ -52,8 +52,26 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	free(line);
 	fclose(file);
+	free(line);
+	free_stack(stack);
 
 	return (EXIT_SUCCESS);
 }
+
+/**
+ * free_stack - Frees a stack
+ * @stack: Pointer to the top of the stack
+ */
+void free_stack(stack_t *stack)
+{
+	stack_t *temp;
+
+	while (stack != NULL)
+	{
+		temp = stack;
+		stack = stack->next;
+		free(temp);
+	}
+}
+
