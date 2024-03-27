@@ -20,22 +20,24 @@ int main(int argc, char *argv[])
 	stack_t *stack = NULL;
 	char *opcode;
 	int value;
+	unsigned int line_number = 0;
 
 	if (argc != 2)
 	{
 		fprintf(stderr, "USAGE: monty file\n");
-		return (EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 
 	file = fopen(argv[1], "r");
 	if (file == NULL)
 	{
 		fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
-		return (EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 
 	while ((read = getline(&line, &len, file)) != -1)
 	{
+		line_number++;
 		/* Parse the line and execute the corresponding operation */
 		strtok(line, "\n");
 		opcode = strtok(line, " ");
@@ -46,15 +48,15 @@ int main(int argc, char *argv[])
 				char *arg = strtok(NULL, " ");
 				if (arg == NULL)
 				{
-					fprintf(stderr, "Error: Push requires an argument\n");
+					fprintf(stderr, "L%d: usage: push integer\n", line_number);
 					exit(EXIT_FAILURE);
 				}
 				value = atoi(arg);
-				push(&stack, value);
+				push(&stack, value, line_number);
 			}
 			else if (strcmp(opcode, "pall") == 0)
 			{
-				pall(&stack, 0);
+				pall(&stack, line_number);
 			}
 		}
 	}
@@ -64,23 +66,5 @@ int main(int argc, char *argv[])
 	free_stack(stack);
 
 	return (EXIT_SUCCESS);
-}
-
-/**
- * free_stack - Frees a stack_t stack
- * @stack: Pointer to the top of the stack
- */
-void free_stack(stack_t *stack)
-{
-	stack_t *temp;
-
-	while (stack != NULL)
-	{
-		temp = stack;
-		stack = stack->next;
-		temp->prev = NULL;
-		temp->next = NULL;
-		free(temp);
-	}
 }
 
